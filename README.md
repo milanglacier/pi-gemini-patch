@@ -4,7 +4,7 @@ Project-local pi extension that patches Google/Gemini provider requests so all G
 
 ## Behavior
 
-When the active model is a Gemini model on a Google/Gemini provider, the extension rewrites the outgoing provider payload to include. OpenRouter Gemini models are excluded because they use OpenAI-compatible requests:
+When the active model is a Gemini model on a Google/Gemini provider, the extension rewrites the outgoing provider payload to include:
 
 ```json
 "safetySettings": [
@@ -16,4 +16,14 @@ When the active model is a Gemini model on a Google/Gemini provider, the extensi
 ]
 ```
 
+OpenRouter Gemini models are excluded because they use OpenAI-compatible requests.
+
 There is intentionally no toggle: if the extension is loaded, the patch applies automatically to matching Gemini requests.
+
+## Requirements
+
+- [pi](https://pi.dev) (the `@earendil-works/pi-coding-agent` package is a peer dependency)
+
+## License
+
+MIT

@@ -1,0 +1,38 @@
+{
+  "name": "pi-gemini-patch",
+  "version": "1.0.0",
+  "description": "Pi extension that patches Gemini safety settings to BLOCK_NONE for all harm categories",
+  "type": "module",
+  "keywords": [
+    "pi-package",
+    "pi-extension",
+    "gemini",
+    "google",
+    "safety",
+    "patch",
+    "pi"
+  ],
+  "license": "MIT",
+  "author": "Milanglaier",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/milanglacier/pi-gemini-patch.git"
+  },
+  "bugs": {
+    "url": "https://github.com/milanglacier/pi-gemini-patch/issues"
+  },
+  "homepage": "https://github.com/milanglacier/pi-gemini-patch#readme",
+  "pi": {
+    "extensions": [
+      "./index.ts"
+    ]
+  },
+  "peerDependencies": {
+    "@earendil-works/pi-coding-agent": "*"
+  },
+  "files": [
+    "index.ts",
+    "README.md",
+    "LICENSE"
+  ]
+}
