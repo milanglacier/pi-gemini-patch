@@ -30,9 +30,19 @@
   "peerDependencies": {
     "@earendil-works/pi-coding-agent": "*"
   },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "check": "npm run typecheck && npm test",
+    "test:watch": "vitest"
+  },
   "files": [
     "index.ts",
     "README.md",
     "LICENSE"
-  ]
+  ],
+  "devDependencies": {
+    "typescript": "^5.4.0",
+    "vitest": "^1.6.0"
+  }
 }
