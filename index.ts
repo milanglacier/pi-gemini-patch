@@ -57,9 +57,14 @@ export function isGeminiModel(model: unknown): boolean {
 export function patchGeminiSafetySettings(payload: unknown): unknown {
 	if (!isRecord(payload)) return payload;
 
+	const config = isRecord(payload.config) ? payload.config : {};
+
 	return {
 		...payload,
-		safetySettings: GEMINI_BLOCK_NONE_SAFETY_SETTINGS,
+		config: {
+			...config,
+			safetySettings: GEMINI_BLOCK_NONE_SAFETY_SETTINGS,
+		},
 	};
 }
 

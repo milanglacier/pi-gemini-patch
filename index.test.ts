@@ -66,26 +66,35 @@ describe("patchGeminiSafetySettings", () => {
     expect(patchGeminiSafetySettings([])).toEqual([]);
   });
 
-  it("returns a new object with safetySettings patched", () => {
-    const payload = { contents: [{ role: "user", parts: [{ text: "hi" }] }] };
-    const result = patchGeminiSafetySettings(payload);
-
-    expect(result).toEqual({
-      ...payload,
-      safetySettings: GEMINI_BLOCK_NONE_SAFETY_SETTINGS,
-    });
-    expect(result).not.toBe(payload);
-  });
-
-  it("overwrites existing safetySettings", () => {
+  it("patches safetySettings inside the provider config", () => {
     const payload = {
-      safetySettings: [{ category: "OLD", threshold: "BLOCK_LOW" }],
+      contents: [{ role: "user", parts: [{ text: "hi" }] }],
+      config: { temperature: 0.2 },
     };
     const result = patchGeminiSafetySettings(payload);
 
     expect(result).toEqual({
       ...payload,
-      safetySettings: GEMINI_BLOCK_NONE_SAFETY_SETTINGS,
+      config: {
+        temperature: 0.2,
+        safetySettings: GEMINI_BLOCK_NONE_SAFETY_SETTINGS,
+      },
+    });
+    expect(result).not.toBe(payload);
+  });
+
+  it("overwrites existing config safetySettings", () => {
+    const payload = {
+      config: {
+        safetySettings: [{ category: "OLD", threshold: "BLOCK_LOW" }],
+      },
+    };
+    const result = patchGeminiSafetySettings(payload);
+
+    expect(result).toEqual({
+      config: {
+        safetySettings: GEMINI_BLOCK_NONE_SAFETY_SETTINGS,
+      },
     });
   });
 });
@@ -115,14 +124,17 @@ describe("geminiSafetyPatch", () => {
       ctx: { model: unknown }
     ) => unknown;
 
-    const event = { payload: { contents: [] } };
+    const event = { payload: { contents: [], config: { maxOutputTokens: 10 } } };
     const ctx = { model: { id: "gemini-1.5-pro", provider: "google" } };
 
     const result = handler(event, ctx);
 
     expect(result).toEqual({
       contents: [],
-      safetySettings: GEMINI_BLOCK_NONE_SAFETY_SETTINGS,
+      config: {
+        maxOutputTokens: 10,
+        safetySettings: GEMINI_BLOCK_NONE_SAFETY_SETTINGS,
+      },
     });
   });
 
