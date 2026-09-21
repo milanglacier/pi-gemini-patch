@@ -70,7 +70,7 @@ export function patchGeminiSafetySettings(payload: unknown): unknown {
 
 export default function geminiSafetyPatch(pi: ExtensionAPI) {
 	pi.on("before_provider_request", (event, ctx) => {
-		const activeModel = (ctx as { model?: unknown }).model;
+		const activeModel = ctx.model;
 
 		if (isGeminiModel(activeModel)) {
 			return patchGeminiSafetySettings(event.payload);

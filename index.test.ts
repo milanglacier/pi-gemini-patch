@@ -4,7 +4,17 @@ import geminiSafetyPatch, {
   patchGeminiSafetySettings,
   GEMINI_BLOCK_NONE_SAFETY_SETTINGS,
 } from "./index.js";
-import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import type {
+  BeforeProviderRequestEvent,
+  BeforeProviderRequestEventResult,
+  ExtensionAPI,
+  ExtensionHandler,
+} from "@earendil-works/pi-coding-agent";
+
+type BeforeProviderRequestHandler = ExtensionHandler<
+  BeforeProviderRequestEvent,
+  BeforeProviderRequestEventResult
+>;
 
 describe("isGeminiModel", () => {
   it("returns false for non-record values", () => {
@@ -119,13 +129,15 @@ describe("geminiSafetyPatch", () => {
 
     geminiSafetyPatch(pi);
 
-    const handler = on.mock.calls[0][1] as (
-      event: { payload: unknown },
-      ctx: { model: unknown }
-    ) => unknown;
+    const handler = on.mock.calls[0][1] as BeforeProviderRequestHandler;
 
-    const event = { payload: { contents: [], config: { maxOutputTokens: 10 } } };
-    const ctx = { model: { id: "gemini-1.5-pro", provider: "google" } };
+    const event = {
+      type: "before_provider_request" as const,
+      payload: { contents: [], config: { maxOutputTokens: 10 } },
+    };
+    const ctx = {
+      model: { id: "gemini-1.5-pro", provider: "google" },
+    } as unknown as Parameters<BeforeProviderRequestHandler>[1];
 
     const result = handler(event, ctx);
 
@@ -144,13 +156,12 @@ describe("geminiSafetyPatch", () => {
 
     geminiSafetyPatch(pi);
 
-    const handler = on.mock.calls[0][1] as (
-      event: { payload: unknown },
-      ctx: { model: unknown }
-    ) => unknown;
+    const handler = on.mock.calls[0][1] as BeforeProviderRequestHandler;
 
-    const event = { payload: { contents: [] } };
-    const ctx = { model: { id: "gpt-4", provider: "openai" } };
+    const event = { type: "before_provider_request" as const, payload: { contents: [] } };
+    const ctx = {
+      model: { id: "gpt-4", provider: "openai" },
+    } as unknown as Parameters<BeforeProviderRequestHandler>[1];
 
     const result = handler(event, ctx);
 
