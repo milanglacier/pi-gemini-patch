@@ -8,6 +8,7 @@ import type {
   BeforeProviderRequestEvent,
   BeforeProviderRequestEventResult,
   ExtensionAPI,
+  ExtensionContext,
   ExtensionHandler,
 } from "@earendil-works/pi-coding-agent";
 
@@ -15,6 +16,15 @@ type BeforeProviderRequestHandler = ExtensionHandler<
   BeforeProviderRequestEvent,
   BeforeProviderRequestEventResult
 >;
+
+function model(id: string, provider: string): NonNullable<ExtensionContext["model"]> {
+  return {
+    id, provider, name: id, api: "google-generative-ai",
+    baseUrl: "https://example.invalid", reasoning: false, input: ["text"],
+    cost: { input: 0, output: 0, cacheRead: 0, cacheWrite: 0 },
+    contextWindow: 128_000, maxTokens: 8_192,
+  };
+}
 
 describe("isGeminiModel", () => {
   it("returns false for non-record values", () => {
@@ -131,15 +141,16 @@ describe("geminiSafetyPatch", () => {
 
     const handler = on.mock.calls[0][1] as BeforeProviderRequestHandler;
 
-    const event = {
-      type: "before_provider_request" as const,
+    const event: BeforeProviderRequestEvent = {
+      type: "before_provider_request",
       payload: { contents: [], config: { maxOutputTokens: 10 } },
     };
     const ctx = {
-      model: { id: "gemini-1.5-pro", provider: "google" },
-    } as unknown as Parameters<BeforeProviderRequestHandler>[1];
+      model: model("gemini-1.5-pro", "google"),
+    } satisfies Pick<ExtensionContext, "model">;
 
-    const result = handler(event, ctx);
+    // Only the validated model field is read by this handler.
+    const result = handler(event, ctx as ExtensionContext);
 
     expect(result).toEqual({
       contents: [],
@@ -158,12 +169,12 @@ describe("geminiSafetyPatch", () => {
 
     const handler = on.mock.calls[0][1] as BeforeProviderRequestHandler;
 
-    const event = { type: "before_provider_request" as const, payload: { contents: [] } };
+    const event: BeforeProviderRequestEvent = { type: "before_provider_request", payload: { contents: [] } };
     const ctx = {
-      model: { id: "gpt-4", provider: "openai" },
-    } as unknown as Parameters<BeforeProviderRequestHandler>[1];
+      model: model("gpt-4", "openai"),
+    } satisfies Pick<ExtensionContext, "model">;
 
-    const result = handler(event, ctx);
+    const result = handler(event, ctx as ExtensionContext);
 
     expect(result).toBeUndefined();
   });

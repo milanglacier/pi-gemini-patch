@@ -28,7 +28,7 @@
     ]
   },
   "peerDependencies": {
-    "@earendil-works/pi-coding-agent": ">=0.86.0 <=0.100.0"
+    "@earendil-works/pi-coding-agent": ">=0.86.0 <=0.120.0"
   },
   "scripts": {
     "typecheck": "tsc --noEmit",
